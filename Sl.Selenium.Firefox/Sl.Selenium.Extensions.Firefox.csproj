@@ -10,7 +10,6 @@
     <RepositoryUrl>https://github.com/emre-gon/Sl.Selenium.Extensions.Firefox</RepositoryUrl>
     <PackageProjectUrl>https://github.com/emre-gon/Sl.Selenium.Extensions.Firefox</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageTags>selenium;automation;firefox</PackageTags>
   </PropertyGroup>
 
