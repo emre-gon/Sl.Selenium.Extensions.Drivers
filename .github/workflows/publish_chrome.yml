@@ -21,7 +21,7 @@ jobs:
         uses: rohith/publish-nuget@v2
         with:
           # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: Sl.Selenium.Chrome/Sl.Sl.Selenium.Chrome.csproj
+          PROJECT_FILE_PATH: Sl.Selenium.Chrome/Sl.Selenium.Extensions.Chrome.csproj
           PACKAGE_NAME: Sl.Selenium.Extensions.Chrome
 
           # API key to authenticate with NuGet server
