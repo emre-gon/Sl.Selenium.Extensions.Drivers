@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sl.Selenium.Chrome\Sl.Selenium.Extensions.Chrome.csproj" />
+    <ProjectReference Include="..\Sl.Selenium.Firefox\Sl.Selenium.Extensions.Firefox.csproj" />
+  </ItemGroup>
+
+</Project>

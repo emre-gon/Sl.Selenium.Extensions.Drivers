@@ -18,21 +18,24 @@ using System.Text;
 
 namespace Sl.Selenium.Extensions.Firefox
 {
-    public class SlFirefoxDriver : SlDriver
+    public class FirefoxDriver : SlDriver
     {
-        private SlFirefoxDriver(string ProfileName, bool Headless)
+        private FirefoxDriver(string ProfileName, bool Headless)
             : base(SlDriverBrowserType.Firefox, ProfileName, Headless)
         {
 
         }
 
-
+        public static SlDriver Instance(bool Headless = false)
+        {
+            return Instance("sl_selenium_firefox");
+        }
 
         public static SlDriver Instance(String ProfileName, bool Headless = false)
         {
             if (!_openDrivers.IsOpen(SlDriverBrowserType.Firefox, ProfileName))
             {
-                SlFirefoxDriver ffDriver = new SlFirefoxDriver(ProfileName, Headless);
+                FirefoxDriver ffDriver = new FirefoxDriver(ProfileName, Headless);
 
                 _openDrivers.OpenDriver(ffDriver);
             }
@@ -180,12 +183,11 @@ namespace Sl.Selenium.Extensions.Firefox
             if (this.Headless)
             {
                 options.AddArguments("--headless");
-                //TODO: disable images
             }
 
             try
             {
-                var driver = new FirefoxDriver(service, options, new TimeSpan(0, 1, 0));
+                var driver = new OpenQA.Selenium.Firefox.FirefoxDriver(service, options, new TimeSpan(0, 1, 0));
                 return driver;
             }
             catch (Exception exc)
@@ -195,7 +197,6 @@ namespace Sl.Selenium.Extensions.Firefox
         }
 
 
-
         private static FirefoxProfile GetProfileRaw(string ProfileName)
         {
             if (Platform.CurrentOS == OperatingSystemType.Windows)
@@ -203,7 +204,7 @@ namespace Sl.Selenium.Extensions.Firefox
                 return new FirefoxProfileManager().GetProfile(ProfileName);
             }
 
-            var profileDirs = Directory.GetDirectories(UnixProfilesFolder);
+            var profileDirs = Directory.GetDirectories(ProfilesFolder);
 
             foreach (var dir in profileDirs)
             {
@@ -271,7 +272,7 @@ namespace Sl.Selenium.Extensions.Firefox
             return profile;
         }
 
-        private static string UnixProfilesFolder
+        private static string ProfilesFolder
         {
             get
             {
@@ -301,7 +302,7 @@ namespace Sl.Selenium.Extensions.Firefox
             }
             else
             {                
-                var profileDirs = Directory.GetDirectories(UnixProfilesFolder);
+                var profileDirs = Directory.GetDirectories(ProfilesFolder);
 
                 
                 var toBeReturned = new List<string>();

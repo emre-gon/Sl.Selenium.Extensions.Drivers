@@ -22,7 +22,7 @@ namespace Sl.Selenium.Extensions.Firefox
 
         protected override SlDriver Driver(string Profile)
         {
-            return SlFirefoxDriver.Instance(Profile, this.Headless);
+            return FirefoxDriver.Instance(Profile, this.Headless);
         }
 
     }
