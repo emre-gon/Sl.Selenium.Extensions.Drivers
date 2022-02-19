@@ -103,8 +103,6 @@ namespace Sl.Selenium.Extensions.Chrome
                 options.AddArguments("headless");
             }
 
-
-            options.AddArgument("--lang=tr-TR");
             options.AddArgument("--no-default-browser-check");
             options.AddArgument("--no-first-run");
 
@@ -112,19 +110,30 @@ namespace Sl.Selenium.Extensions.Chrome
             options.AddArgument("--remote-debugging-port=58164");
             options.AddArgument("--log-level=0");
 
-            #region profile
+            AddProfileArgumentToBaseDriver(options);
+
+            var driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
+
+            return driver;
+
+
+        }
+
+
+        protected void AddProfileArgumentToBaseDriver(ChromeOptions options)
+        {
             string chromeProfilesFolder = null;
             string chromeProfileName = this.ProfileName;
             if (this.ProfileName.Contains("/") || this.ProfileName.Contains("\\"))
             {
                 int lastIndex;
-                if(this.ProfileName.Contains("/"))
+                if (this.ProfileName.Contains("/"))
                 {
                     lastIndex = this.ProfileName.LastIndexOf("/");
                 }
                 else
                 {
-                    lastIndex = this.ProfileName.LastIndexOf("\\");                    
+                    lastIndex = this.ProfileName.LastIndexOf("\\");
                 }
 
                 chromeProfilesFolder = this.ProfileName.Substring(0, lastIndex);
@@ -159,7 +168,7 @@ namespace Sl.Selenium.Extensions.Chrome
                     }
                 }
 
-                if(chromeProfilesFolder == null)
+                if (chromeProfilesFolder == null)
                 {
                     chromeProfilesFolder = ProfilesFolder + this.ProfileName;
                 }
@@ -171,15 +180,7 @@ namespace Sl.Selenium.Extensions.Chrome
                 options.AddArgument($@"user-data-dir={ProfilesFolder}");
                 options.AddArgument($@"profile-directory={chromeProfileName}");
             }
-            #endregion
-
-            var driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
-
-            return driver;
-
-
         }
-
 
 
         private static string ProfilesFolder
