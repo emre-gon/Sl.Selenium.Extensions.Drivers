@@ -20,7 +20,7 @@ namespace Sl.Selenium.Extensions.Firefox
 {
     public class FirefoxDriver : SlDriver
     {
-        private FirefoxDriver(string ProfileName, bool Headless)
+        protected FirefoxDriver(string ProfileName, bool Headless)
             : base(SlDriverBrowserType.Firefox, ProfileName, Headless)
         {
 

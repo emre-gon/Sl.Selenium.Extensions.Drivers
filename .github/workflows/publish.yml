@@ -1,4 +1,4 @@
-name: publish to nuget
+name: firefox publish to nuget
 on:
   push:
     branches:

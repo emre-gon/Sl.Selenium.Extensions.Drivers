@@ -16,7 +16,7 @@ namespace Sl.Selenium.Extensions.Chrome
 {
     public class ChromeDriver : SlDriver
     {
-        private ChromeDriver(string ProfileName, bool Headless)
+        protected ChromeDriver(string ProfileName, bool Headless)
             : base(SlDriverBrowserType.Chrome, ProfileName, Headless)
         {
 
