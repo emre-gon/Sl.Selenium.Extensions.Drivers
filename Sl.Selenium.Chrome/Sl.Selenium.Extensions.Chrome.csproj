@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.3.0</Version>
     <Authors>emre-gon</Authors>
     <Copyright>2022</Copyright>
     <PackageProjectUrl>https://github.com/emre-gon/Sl.Selenium.Extensions.Drivers</PackageProjectUrl>
@@ -22,7 +22,7 @@ Automatically downloads latest chrome driver</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sl.Selenium.Extensions" Version="1.2.0" />
+    <PackageReference Include="Sl.Selenium.Extensions" Version="1.3.0" />
   </ItemGroup>
 
   <ItemGroup>

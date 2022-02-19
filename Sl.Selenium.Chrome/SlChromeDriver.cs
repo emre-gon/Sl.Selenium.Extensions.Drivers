@@ -14,10 +14,10 @@ using System.Text;
 
 namespace Sl.Selenium.Extensions.Chrome
 {
-    public class ChromeDriver : SlDriver
+    public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>
     {
         protected ChromeDriver(string ProfileName, bool Headless)
-            : base(SlDriverBrowserType.Chrome, ProfileName, Headless)
+            : base(ProfileName, Headless)
         {
 
         }
@@ -122,6 +122,9 @@ namespace Sl.Selenium.Extensions.Chrome
 
         protected void AddProfileArgumentToBaseDriver(ChromeOptions options)
         {
+            if (ProfileName == "sl_selenium_chrome")
+                return;
+
             string chromeProfilesFolder = null;
             string chromeProfileName = this.ProfileName;
             if (this.ProfileName.Contains("/") || this.ProfileName.Contains("\\"))
@@ -172,13 +175,6 @@ namespace Sl.Selenium.Extensions.Chrome
                 {
                     chromeProfilesFolder = ProfilesFolder + this.ProfileName;
                 }
-            }
-
-
-            if (ProfileName != "sl_selenium_chrome")
-            {
-                options.AddArgument($@"user-data-dir={ProfilesFolder}");
-                options.AddArgument($@"profile-directory={chromeProfileName}");
             }
         }
 

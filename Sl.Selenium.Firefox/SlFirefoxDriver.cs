@@ -18,10 +18,10 @@ using System.Text;
 
 namespace Sl.Selenium.Extensions.Firefox
 {
-    public class FirefoxDriver : SlDriver
+    public class FirefoxDriver : GenSlDriver<OpenQA.Selenium.Firefox.FirefoxDriver>
     {
         protected FirefoxDriver(string ProfileName, bool Headless)
-            : base(SlDriverBrowserType.Firefox, ProfileName, Headless)
+            : base(ProfileName, Headless)
         {
 
         }
