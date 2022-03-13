@@ -5,7 +5,6 @@ using ICSharpCode.SharpZipLib.Tar;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
-using Selenium.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,28 +15,33 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Sl.Selenium.Extensions.Firefox
+namespace Selenium.Extensions
 {
     public class FirefoxDriver : GenSlDriver<OpenQA.Selenium.Firefox.FirefoxDriver>
     {
-        protected FirefoxDriver(string ProfileName, bool Headless)
-            : base(ProfileName, Headless)
+        protected FirefoxDriver(ISet<string> DriverArguments, string ProfileName, bool Headless)
+            : base(DriverArguments, ProfileName, Headless)
         {
 
         }
 
         public static SlDriver Instance(bool Headless = false)
         {
-            return Instance("sl_selenium_firefox");
+            return Instance("sl_selenium_firefox", Headless);
         }
 
         public static SlDriver Instance(String ProfileName, bool Headless = false)
         {
+            return Instance(new HashSet<string>(), ProfileName, Headless);
+        }
+
+        public static SlDriver Instance(ISet<string> DriverArguments, String ProfileName, bool Headless = false)
+        {
             if (!_openDrivers.IsOpen(SlDriverBrowserType.Firefox, ProfileName))
             {
-                FirefoxDriver ffDriver = new FirefoxDriver(ProfileName, Headless);
+                FirefoxDriver cDriver = new FirefoxDriver(DriverArguments, ProfileName, Headless);
 
-                _openDrivers.OpenDriver(ffDriver);
+                _openDrivers.OpenDriver(cDriver);
             }
 
             return _openDrivers.GetDriver(SlDriverBrowserType.Firefox, ProfileName);
@@ -102,6 +106,7 @@ namespace Sl.Selenium.Extensions.Firefox
 
         protected override void DownloadLatestDriver()
         {
+            Console.WriteLine("Downloading latest gecko driver...");
             using (WebClient client = new WebClient())
             {
                 string htmlStr = client.DownloadString("https://github.com/mozilla/geckodriver/releases/latest");
@@ -161,7 +166,7 @@ namespace Sl.Selenium.Extensions.Firefox
 
         }
 
-        protected override RemoteWebDriver createBaseDriver()
+        protected override OpenQA.Selenium.Firefox.FirefoxDriver CreateBaseDriver()
         {
             FirefoxDriverService service = FirefoxDriverService
                 .CreateDefaultService(DriversFolderPath(), DriverName());
@@ -182,7 +187,16 @@ namespace Sl.Selenium.Extensions.Firefox
 
             if (this.Headless)
             {
-                options.AddArguments("--headless");
+                this.DriverArguments.Add("--headless");
+            }
+            else
+            {
+                this.DriverArguments.Remove("--headless");
+            }
+
+            foreach(var arg in DriverArguments)
+            {
+                options.AddArgument(arg);
             }
 
             try

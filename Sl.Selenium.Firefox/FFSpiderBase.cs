@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Selenium.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sl.Selenium.Extensions.Firefox
+namespace Selenium.Extensions
 {
     public abstract class FFSpiderBase : SpiderBase
     {

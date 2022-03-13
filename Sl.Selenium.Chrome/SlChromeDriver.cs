@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
 using Selenium.Extensions;
+using Sl.Selenium.Extensions.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,26 +13,31 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Sl.Selenium.Extensions.Chrome
+namespace Sl.Selenium.Extensions
 {
     public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>
     {
-        protected ChromeDriver(string ProfileName, bool Headless)
-            : base(ProfileName, Headless)
+        protected ChromeDriver(ISet<string> DriverArguments, string ProfileName,  bool Headless)
+            : base(DriverArguments, ProfileName, Headless)
         {
 
         }
 
         public static SlDriver Instance(bool Headless = false)
         {
-            return Instance("sl_selenium_chrome");
+            return Instance("sl_selenium_chrome", Headless);
         }
 
         public static SlDriver Instance(String ProfileName, bool Headless = false)
         {
+            return Instance(new HashSet<string>(), ProfileName, Headless);
+        }
+
+        public static SlDriver Instance(ISet<string> DriverArguments, String ProfileName, bool Headless = false)
+        {
             if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, ProfileName))
             {
-                ChromeDriver cDriver = new ChromeDriver(ProfileName, Headless);
+                ChromeDriver cDriver = new ChromeDriver(DriverArguments, ProfileName, Headless);
 
                 _openDrivers.OpenDriver(cDriver);
             }
@@ -84,7 +90,7 @@ namespace Sl.Selenium.Extensions.Chrome
             }
         }
 
-        protected override RemoteWebDriver createBaseDriver()
+        protected override OpenQA.Selenium.Chrome.ChromeDriver CreateBaseDriver()
         {
             ChromeDriverService service = ChromeDriverService.CreateDefaultService(DriversFolderPath(), DriverName());
 
@@ -95,28 +101,51 @@ namespace Sl.Selenium.Extensions.Chrome
 
 
             ChromeOptions options = new ChromeOptions();
-
-
-
             if (this.Headless)
             {
-                options.AddArguments("headless");
+                DriverArguments.Add("headless");
+            }
+            else
+            {
+                DriverArguments.Remove("headless");
             }
 
-            options.AddArgument("--no-default-browser-check");
-            options.AddArgument("--no-first-run");
+            DriverArguments.Add("--no-default-browser-check");
+            DriverArguments.Add("--no-first-run");
 
-            options.AddArgument("--remote-debugging-host=127.0.0.1");
-            options.AddArgument("--remote-debugging-port=58164");
-            options.AddArgument("--log-level=0");
+
+            HashSet<string> argumentKeys = new HashSet<string>(DriverArguments.Select(f => f.Split('=')[0]));
+
+
+            if (!argumentKeys.Contains("--remote-debugging-host"))
+            {
+                DriverArguments.Add("--remote-debugging-host=127.0.0.1");
+            }
+
+
+            if (!argumentKeys.Contains("--remote-debugging-port"))
+            {
+                DriverArguments.Add("--remote-debugging-port=58164");
+            }
+
+
+
+            if (!argumentKeys.Contains("--log-level"))
+            {
+                DriverArguments.Add("--log-level=0");
+            }
+
+
+            foreach(var arg in DriverArguments)
+            {
+                options.AddArgument(arg);
+            }
 
             AddProfileArgumentToBaseDriver(options);
 
             var driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
 
             return driver;
-
-
         }
 
 
