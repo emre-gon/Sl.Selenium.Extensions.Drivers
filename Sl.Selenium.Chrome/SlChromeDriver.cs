@@ -17,10 +17,11 @@ namespace Sl.Selenium.Extensions
 {
     public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>
     {
-        protected ChromeDriver(ISet<string> DriverArguments, string ProfileName,  bool Headless)
+        public ISet<string> ExcludedArguments { get; }
+        protected ChromeDriver(ISet<string> DriverArguments, ISet<string> ExcludedArguments, string ProfileName, bool Headless)
             : base(DriverArguments, ProfileName, Headless)
         {
-
+            this.ExcludedArguments = ExcludedArguments ?? new HashSet<string>();
         }
 
         public static SlDriver Instance(bool Headless = false)
@@ -35,9 +36,14 @@ namespace Sl.Selenium.Extensions
 
         public static SlDriver Instance(ISet<string> DriverArguments, String ProfileName, bool Headless = false)
         {
+            return Instance(new HashSet<string>(), new HashSet<string>(), ProfileName, Headless);
+        }
+
+        public static SlDriver Instance(ISet<string> DriverArguments, ISet<string> ExcludedArguments, String ProfileName, bool Headless = false)
+        {
             if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, ProfileName))
             {
-                ChromeDriver cDriver = new ChromeDriver(DriverArguments, ProfileName, Headless);
+                ChromeDriver cDriver = new ChromeDriver(DriverArguments, ExcludedArguments, ProfileName, Headless);
 
                 _openDrivers.OpenDriver(cDriver);
             }
@@ -141,6 +147,12 @@ namespace Sl.Selenium.Extensions
                 options.AddArgument(arg);
             }
 
+
+            foreach(var excluded in ExcludedArguments)
+            {
+                options.AddExcludedArgument(excluded);
+            }
+
             AddProfileArgumentToBaseDriver(options);
 
             var driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
@@ -233,7 +245,6 @@ namespace Sl.Selenium.Extensions
                 }
             }
         }
-
 
 
         public static IList<ChromeProfile> GetInstalledChromeProfiles()
