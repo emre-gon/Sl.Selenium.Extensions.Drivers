@@ -217,6 +217,11 @@ namespace Sl.Selenium.Extensions
                     chromeProfilesFolder = ProfilesFolder + this.ProfileName;
                 }
             }
+
+            options.AddArgument($"user-data-dir={ProfilesFolder}");
+
+            options.AddArgument($"profile-directory={chromeProfileName}");
+            
         }
 
 
