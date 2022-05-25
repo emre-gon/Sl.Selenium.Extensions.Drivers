@@ -122,25 +122,10 @@ namespace Sl.Selenium.Extensions
 
             HashSet<string> argumentKeys = new HashSet<string>(DriverArguments.Select(f => f.Split('=')[0]));
 
-
-            if (!argumentKeys.Contains("--remote-debugging-host"))
-            {
-                DriverArguments.Add("--remote-debugging-host=127.0.0.1");
-            }
-
-
-            if (!argumentKeys.Contains("--remote-debugging-port"))
-            {
-                DriverArguments.Add("--remote-debugging-port=58164");
-            }
-
-
-
             if (!argumentKeys.Contains("--log-level"))
             {
                 DriverArguments.Add("--log-level=0");
             }
-
 
             foreach(var arg in DriverArguments)
             {
@@ -295,6 +280,7 @@ namespace Sl.Selenium.Extensions
 
         protected override void DownloadLatestDriver()
         {
+            Console.WriteLine("Downloading chrome driver");
             string chromeRepo = "https://chromedriver.storage.googleapis.com";
 
             using (WebClient client = new WebClient())
