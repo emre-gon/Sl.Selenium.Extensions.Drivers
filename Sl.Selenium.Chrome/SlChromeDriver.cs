@@ -222,7 +222,7 @@ namespace Sl.Selenium.Extensions
                 else if (Platform.CurrentOS == OperatingSystemType.OSX)
                 {
                     var uProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                    return $"{uProfile}/Library/Application Support/Google/Chrome/User Data/";
+                    return $"{uProfile}/Library/Application Support/Google/Chrome/";
                 }
                 else if (Platform.CurrentOS == OperatingSystemType.Linux)
                 {
