@@ -53,9 +53,6 @@ namespace Sl.Selenium.Extensions
 
 
         private readonly static string[] ProcessNames = { "chrome", "chromedriver" };
-        /// <summary>
-        /// Use with caution. It will kill all running spiders
-        /// </summary>
         public static void KillAllChromeProcesses()
         {
             foreach (var name in ProcessNames)
@@ -73,7 +70,7 @@ namespace Sl.Selenium.Extensions
                 }
             }
 
-            SlDriver.ClearDrivers(SlDriverBrowserType.Firefox);
+            SlDriver.ClearDrivers(SlDriverBrowserType.Chrome);
         }
 
         public override string DriversFolderName()
