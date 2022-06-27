@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sl.Selenium.Extensions.Fire
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sl.Selenium.Extensions.Chrome", "Sl.Selenium.Chrome\Sl.Selenium.Extensions.Chrome.csproj", "{F717A850-A1E6-4FE6-9F55-E36669BB7CDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{9E7871F8-2C05-41DE-9DF1-486D46C174AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F717A850-A1E6-4FE6-9F55-E36669BB7CDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F717A850-A1E6-4FE6-9F55-E36669BB7CDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F717A850-A1E6-4FE6-9F55-E36669BB7CDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E7871F8-2C05-41DE-9DF1-486D46C174AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E7871F8-2C05-41DE-9DF1-486D46C174AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E7871F8-2C05-41DE-9DF1-486D46C174AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E7871F8-2C05-41DE-9DF1-486D46C174AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -146,71 +146,148 @@ namespace Sl.Selenium.Extensions
         }
 
 
+        static Dictionary<string,DateTime> directoryCopiesDuringCurrentRun = new Dictionary<string,DateTime>();
+
+        /// <summary>
+        /// Selenium cannot run multiple chrome profiles with the same user-data-dir
+        /// When Enabled, the package will copy the default user-data-dir for each profile into a unique folder
+        /// and set user-data-dir to that unique folder.
+        /// It might (will) lengthen the startup of the chrome.
+        /// </summary>
+        public static bool ENABLE_MULTI_PROFILE_DIRECTORY_COPY = false;
+
         protected void AddProfileArgumentToBaseDriver(ChromeOptions options)
         {
             if (ProfileName == "sl_selenium_chrome")
                 return;
 
-            string chromeProfilesFolder = null;
-            string chromeProfileName = this.ProfileName;
+            string profileFolderPath = null;
+
+            var installedProfiles = GetInstalledChromeProfiles();
+
             if (this.ProfileName.Contains("/") || this.ProfileName.Contains("\\"))
             {
-                int lastIndex;
-                if (this.ProfileName.Contains("/"))
-                {
-                    lastIndex = this.ProfileName.LastIndexOf("/");
-                }
-                else
-                {
-                    lastIndex = this.ProfileName.LastIndexOf("\\");
-                }
-
-                chromeProfilesFolder = this.ProfileName.Substring(0, lastIndex);
-
-                chromeProfileName = this.ProfileName.Substring(lastIndex + 1);
-
-
+                profileFolderPath = this.ProfileName;
             }
             else
             {
-                var profiles = GetInstalledChromeProfiles();
+                var orderedProfiles = installedProfiles.OrderByDescending(f => f.FriendlyName == this.ProfileName)
+                    .ThenByDescending(f => f.ActualName == this.ProfileName)
+                    .ThenByDescending(f => f.FullFolderPath == this.ProfileName);
 
-                foreach (var p in profiles)
+                if(orderedProfiles.Any())
                 {
-                    if (p.FriendlyName == this.ProfileName)
-                    {
-                        chromeProfilesFolder = p.FullFolderPath;
-                        chromeProfileName = p.ActualName;
-                        break;
-                    }
-                    else if (p.ActualName == this.ProfileName)
-                    {
-                        chromeProfilesFolder = p.FullFolderPath;
-                        chromeProfileName = p.ActualName;
-                        break;
-                    }
-                    else if (p.FullFolderPath == this.ProfileName)
-                    {
-                        chromeProfilesFolder = p.FullFolderPath;
-                        chromeProfileName = p.ActualName;
-                        break;
-                    }
+                    var first = orderedProfiles.First();
+                    profileFolderPath = first.FullFolderPath;
                 }
-
-                if (chromeProfilesFolder == null)
+                else
                 {
-                    chromeProfilesFolder = ProfilesFolder + this.ProfileName;
+                    profileFolderPath = DefaultProfilesFolder + this.ProfileName;
                 }
             }
 
-            options.AddArgument($"user-data-dir={ProfilesFolder}");
 
-            options.AddArgument($"profile-directory={chromeProfileName}");
-            
+            string replaced = profileFolderPath.Replace("\\", "/");
+
+            var lastIndex = replaced.LastIndexOf("/");
+
+            var profileName = replaced.Substring(lastIndex + 1);
+
+            string userDataDir = profileFolderPath.Substring(0, lastIndex + 1);
+
+
+
+            if (userDataDir == DefaultProfilesFolder && ENABLE_MULTI_PROFILE_DIRECTORY_COPY)
+            {
+                userDataDir = userDataDir.Substring(0, userDataDir.Length - 1);
+
+                DirectoryInfo dir = new DirectoryInfo(userDataDir);
+                DirectoryInfo dir2 = new DirectoryInfo(userDataDir + " sln " + profileName);
+
+                bool copyDir = false;
+                if (dir2.Exists)
+                {
+                    if (directoryCopiesDuringCurrentRun.ContainsKey(dir2.FullName))
+                    {
+                        copyDir = (DateTime.Now - directoryCopiesDuringCurrentRun[dir2.FullName]).TotalDays > 1;      
+                        //do not copy the folder in the same run
+                    }
+                    else
+                    {
+                        dir2.Delete(true);
+                        copyDir = true;
+                    }
+                }
+                else
+                {
+                    copyDir = true;
+                }
+
+                if (copyDir)
+                {
+                    //Directory.CreateDirectory(dir2.FullName + "\\" + profileName);
+
+
+                    //CopyAll(new DirectoryInfo(dir + "\\" + profileName), 
+                    //    new DirectoryInfo(dir2 + "\\" + profileName));
+
+
+                    CopyAll(dir, dir2);
+                }
+
+                options.AddArgument($"--user-data-dir={dir2.FullName}");
+
+                options.AddArgument($"--profile-directory={profileName}");
+            }
+            else
+            {
+                options.AddArgument($"--user-data-dir={userDataDir}");
+
+                var profileDir = profileFolderPath.Replace(DefaultProfilesFolder, "");
+                options.AddArgument($"--profile-directory={profileName}");
+            }
+        }
+
+        private static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        {
+            if (source.FullName.ToLower() == target.FullName.ToLower())
+            {
+                return;
+            }
+
+            // Check if the target directory exists, if not, create it.
+            if (Directory.Exists(target.FullName) == false)
+            {
+                Directory.CreateDirectory(target.FullName);
+            }
+
+            // Copy each file into it's new directory.
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                //Console.WriteLine(@"Copying {0}\{1}", target.FullName, fi.Name);
+                fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
+            }
+
+            // Copy each subdirectory using recursion.
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir =
+                    target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir);
+            }
         }
 
 
-        private static string ProfilesFolder
+        public new void Dispose()
+        {
+
+
+
+            base.Dispose();
+        }
+
+
+        private static string DefaultProfilesFolder
         {
             get
             {
@@ -240,12 +317,12 @@ namespace Sl.Selenium.Extensions
         public static IList<ChromeProfile> GetInstalledChromeProfiles()
         {
             var toBeReturned = new List<ChromeProfile>();
-            if (!Directory.Exists(ProfilesFolder))
+            if (!Directory.Exists(DefaultProfilesFolder))
             {
                 return toBeReturned;
             }
 
-            var allDirs = Directory.GetDirectories(ProfilesFolder);
+            var allDirs = Directory.GetDirectories(DefaultProfilesFolder);
 
 
             foreach(var dir in allDirs)
