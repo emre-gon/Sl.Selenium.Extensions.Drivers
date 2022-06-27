@@ -52,7 +52,7 @@ namespace Sl.Selenium.Extensions
         }
 
 
-        private readonly static string[] ProcessNames = { "chrome" };
+        private readonly static string[] ProcessNames = { "chrome", "chromedriver" };
         /// <summary>
         /// Use with caution. It will kill all running spiders
         /// </summary>
