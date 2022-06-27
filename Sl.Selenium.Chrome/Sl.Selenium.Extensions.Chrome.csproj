@@ -22,7 +22,7 @@ Automatically downloads latest chrome driver</Description>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Selenium.Extensions\Selenium.Extensions\Selenium.Extensions.csproj" />
+    <PackageReference Include="Sl.Selenium.Extensions" Version="1.4.0" />
   </ItemGroup>
 
   <ItemGroup>
