@@ -17,11 +17,11 @@ namespace Sl.Selenium.Extensions
 {
     public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>
     {
-        public ISet<string> ExcludedArguments { get; }
-        protected ChromeDriver(ISet<string> DriverArguments, ISet<string> ExcludedArguments, string ProfileName, bool Headless)
-            : base(DriverArguments, ProfileName, Headless)
+        protected ChromeDriverParameters ChromeDriverParameters { get; set; }
+        protected ChromeDriver(ChromeDriverParameters parameters)
+            : base(parameters.DriverArguments, parameters.ProfileName, parameters.Headless)
         {
-            this.ExcludedArguments = ExcludedArguments ?? new HashSet<string>();
+            this.ChromeDriverParameters = parameters;
         }
 
         public static SlDriver Instance(bool Headless = false)
@@ -41,14 +41,26 @@ namespace Sl.Selenium.Extensions
 
         public static SlDriver Instance(ISet<string> DriverArguments, ISet<string> ExcludedArguments, String ProfileName, bool Headless = false)
         {
-            if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, ProfileName))
+            var parameters = new ChromeDriverParameters()
             {
-                ChromeDriver cDriver = new ChromeDriver(DriverArguments, ExcludedArguments, ProfileName, Headless);
+                DriverArguments = DriverArguments,
+                ExcludedArguments = ExcludedArguments,
+                Headless = Headless,
+                ProfileName = ProfileName
+            };
+
+            return Instance(parameters);
+        }
+
+        public static SlDriver Instance(ChromeDriverParameters parameters)
+        {
+            if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, parameters.ProfileName))
+            {
+                ChromeDriver cDriver = new ChromeDriver(parameters);
 
                 _openDrivers.OpenDriver(cDriver);
             }
-
-            return _openDrivers.GetDriver(SlDriverBrowserType.Chrome, ProfileName);
+            return _openDrivers.GetDriver(SlDriverBrowserType.Chrome, parameters.ProfileName);
         }
 
 
@@ -130,16 +142,23 @@ namespace Sl.Selenium.Extensions
             }
 
 
-            foreach(var excluded in ExcludedArguments)
+            foreach(var excluded in ChromeDriverParameters.ExcludedArguments ?? Enumerable.Empty<string>())
             {
                 options.AddExcludedArgument(excluded);
             }
 
             AddProfileArgumentToBaseDriver(options);
 
-            var driver = new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
 
-            return driver;
+
+            if (ChromeDriverParameters.Timeout != default)
+            {
+                return new OpenQA.Selenium.Chrome.ChromeDriver(service, options, ChromeDriverParameters.Timeout);
+            }
+            else
+            {
+                return new OpenQA.Selenium.Chrome.ChromeDriver(service, options);
+            }
         }
 
 
@@ -211,7 +230,14 @@ namespace Sl.Selenium.Extensions
                     }
                     else
                     {
-                        dir2.Delete(true);
+                        try
+                        {
+                            dir2.Delete(true);
+                        }
+                        catch(UnauthorizedAccessException acc)
+                        {
+                            //ignore
+                        }
                         copyDir = true;
                     }
                 }
