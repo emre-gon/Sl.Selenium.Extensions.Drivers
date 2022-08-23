@@ -52,15 +52,24 @@ namespace Sl.Selenium.Extensions
             return Instance(parameters);
         }
 
-        public static SlDriver Instance(ChromeDriverParameters parameters)
+        public static SlDriver Instance(ChromeDriverParameters args)
         {
-            if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, parameters.ProfileName))
+            if (args.DriverArguments == null)
+                args.DriverArguments = new HashSet<string>();
+
+            if (args.ExcludedArguments == null)
+                args.ExcludedArguments = new HashSet<string>();
+
+            if (args.ProfileName == null)
+                args.ProfileName = "sl_selenium_chrome";
+
+            if (!_openDrivers.IsOpen(SlDriverBrowserType.Chrome, args.ProfileName))
             {
-                ChromeDriver cDriver = new ChromeDriver(parameters);
+                ChromeDriver cDriver = new ChromeDriver(args);
 
                 _openDrivers.OpenDriver(cDriver);
             }
-            return _openDrivers.GetDriver(SlDriverBrowserType.Chrome, parameters.ProfileName);
+            return _openDrivers.GetDriver(SlDriverBrowserType.Chrome, args.ProfileName);
         }
 
 
