@@ -3,6 +3,7 @@ using HtmlAgilityPack.CssSelectors.NetCore;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using Microsoft.Extensions.Logging;
+using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using System;
@@ -17,7 +18,7 @@ using System.Text;
 
 namespace Selenium.Extensions
 {
-    public class FirefoxDriver : GenSlDriver<OpenQA.Selenium.Firefox.FirefoxDriver>
+    public class FirefoxDriver : GenSlDriver<OpenQA.Selenium.Firefox.FirefoxDriver>, IDevTools
     {
         protected FirefoxDriver(ISet<string> DriverArguments, string ProfileName, bool Headless)
             : base(DriverArguments, ProfileName, Headless)
@@ -306,6 +307,8 @@ namespace Selenium.Extensions
             }
         }
 
+        public bool HasActiveDevToolsSession => throw new NotImplementedException();
+
         public static IList<string> GetInstalledFirefoxProfiles()
         {
 
@@ -336,6 +339,21 @@ namespace Selenium.Extensions
 
                 return toBeReturned;
             }
+        }
+
+        public DevToolsSession GetDevToolsSession()
+        {
+            return BaseDriver.GetDevToolsSession();
+        }
+
+        public DevToolsSession GetDevToolsSession(int protocolVersion)
+        {
+            return BaseDriver.GetDevToolsSession(protocolVersion);
+        }
+
+        public void CloseDevToolsSession()
+        {
+            BaseDriver.CloseDevToolsSession();
         }
     }
 }

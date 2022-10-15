@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Remote;
 using Selenium.Extensions;
 using Sl.Selenium.Extensions.Chrome;
@@ -15,7 +16,7 @@ using System.Text;
 
 namespace Sl.Selenium.Extensions
 {
-    public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>
+    public class ChromeDriver : GenSlDriver<OpenQA.Selenium.Chrome.ChromeDriver>, IDevTools
     {
         protected ChromeDriverParameters ChromeDriverParameters { get; set; }
         protected ChromeDriver(ChromeDriverParameters parameters)
@@ -345,6 +346,7 @@ namespace Sl.Selenium.Extensions
             }
         }
 
+        public bool HasActiveDevToolsSession => throw new NotImplementedException();
 
         public static IList<ChromeProfile> GetInstalledChromeProfiles()
         {
@@ -440,5 +442,19 @@ namespace Sl.Selenium.Extensions
 
         }
 
+        public DevToolsSession GetDevToolsSession()
+        {
+            return BaseDriver.GetDevToolsSession();
+        }
+
+        public DevToolsSession GetDevToolsSession(int protocolVersion)
+        {
+            return BaseDriver.GetDevToolsSession(protocolVersion);
+        }
+
+        public void CloseDevToolsSession()
+        {
+            BaseDriver.CloseDevToolsSession();
+        }
     }
 }
