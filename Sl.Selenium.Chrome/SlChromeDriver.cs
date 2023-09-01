@@ -4,6 +4,7 @@ using OpenQA.Selenium.DevTools;
 using OpenQA.Selenium.Remote;
 using Selenium.Extensions;
 using Sl.Selenium.Extensions.Chrome;
+using Sl.Selenium.Extensions.Chrome.DriverDownloader;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -391,56 +392,16 @@ namespace Sl.Selenium.Extensions
 
         protected override void DownloadLatestDriver()
         {
-            Console.WriteLine("Downloading chrome driver");
-            string chromeRepo = "https://chromedriver.storage.googleapis.com";
+			Console.WriteLine("Downloading chrome driver");
 
-            using (WebClient client = new WebClient())
-            {
-                string latestVersion = client.DownloadString(chromeRepo + "/LATEST_RELEASE");
+			var downloader = new ChromeDriverDownloader(new ChromeDriverDownloaderOptions
+			{
+				DriversFolderPath = DriversFolderPath(),
+				DriverPath = DriverPath()
+			});
 
-
-                string downloadPath;
-                switch (Platform.CurrentOS)
-                {
-                    case OperatingSystemType.Windows:
-                        downloadPath = "chromedriver_win32.zip";
-                        break;
-                    case OperatingSystemType.OSX:
-                        downloadPath = "chromedriver_mac64.zip";
-                        break;
-                    case OperatingSystemType.Linux:
-                        downloadPath = "chromedriver_linux64.zip";
-                        break;
-                    default:
-                        throw new Exception("Unknown OS");
-                }
-
-                Directory.CreateDirectory(DriversFolderPath());
-                string compressedFilePath = DriverPath() + ".zip";
-
-
-                client.DownloadFile($"{chromeRepo}/{latestVersion}/{downloadPath}", compressedFilePath);
-
-
-
-                var filesBefore = Directory.GetFiles(DriversFolderPath());
-
-                ZipFile.ExtractToDirectory(compressedFilePath, DriversFolderPath());
-
-
-                var filesAfter = Directory.GetFiles(DriversFolderPath());
-
-
-                var extractedChromeDriver = filesAfter.First(f => !filesBefore.Contains(f));
-
-
-                File.Delete(compressedFilePath);
-                File.Move(extractedChromeDriver, DriverPath());
-            }
-
-
-
-        }
+			downloader.DownloadLatestDriver();
+		}
 
         public DevToolsSession GetDevToolsSession()
         {
