@@ -6,7 +6,6 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Sl.Selenium.Extensions.Chrome.DriverDownloader
 {
