@@ -3,7 +3,7 @@ name: Validate PR
 on:
   pull_request_target:
     branches:
-      - main
+      - master
 jobs:
   build-api:
     runs-on: ubuntu-latest
