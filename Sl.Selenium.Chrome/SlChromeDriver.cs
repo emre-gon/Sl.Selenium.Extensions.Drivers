@@ -389,27 +389,50 @@ namespace Sl.Selenium.Extensions
             return toBeReturned;
         }
 
+        private class ChromeVersionResponse
+        {
+            public string timestamp { get; set; }
+
+            public Dictionary<string, ChromeVersionChannel> channels { get; set; }
+        }
+
+        private class ChromeVersionChannel
+        {
+            public string channel { get; set; }
+            public string version { get; set; }
+            public string revision { get; set; }
+        }
+
         protected override void DownloadLatestDriver()
         {
             Console.WriteLine("Downloading chrome driver");
-            string chromeRepo = "https://chromedriver.storage.googleapis.com";
 
             using (WebClient client = new WebClient())
             {
-                string latestVersion = client.DownloadString(chromeRepo + "/LATEST_RELEASE");
+                string latestVersionJson = client.DownloadString("https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json");
+
+                ChromeVersionResponse response = JsonConvert.DeserializeObject<ChromeVersionResponse>(latestVersionJson);
+
+                String stableVersion = response.channels["Stable"].version;
 
 
-                string downloadPath;
+                string downloadPath = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing";
+                string driverKey;
+                string chromeDriverFileName;
+
                 switch (Platform.CurrentOS)
                 {
                     case OperatingSystemType.Windows:
-                        downloadPath = "chromedriver_win32.zip";
+                        driverKey = "win32";
+                        chromeDriverFileName = "chromedriver.exe";
                         break;
                     case OperatingSystemType.OSX:
-                        downloadPath = "chromedriver_mac64.zip";
+                        driverKey = "mac-x64";
+                        chromeDriverFileName = "chromedriver";
                         break;
                     case OperatingSystemType.Linux:
-                        downloadPath = "chromedriver_linux64.zip";
+                        driverKey = "linux64";
+                        chromeDriverFileName = "chromedriver";
                         break;
                     default:
                         throw new Exception("Unknown OS");
@@ -419,23 +442,14 @@ namespace Sl.Selenium.Extensions
                 string compressedFilePath = DriverPath() + ".zip";
 
 
-                client.DownloadFile($"{chromeRepo}/{latestVersion}/{downloadPath}", compressedFilePath);
-
-
-
-                var filesBefore = Directory.GetFiles(DriversFolderPath());
+                client.DownloadFile($"{downloadPath}/{stableVersion}/{driverKey}/chromedriver-{driverKey}.zip", compressedFilePath);
 
                 ZipFile.ExtractToDirectory(compressedFilePath, DriversFolderPath());
 
-
-                var filesAfter = Directory.GetFiles(DriversFolderPath());
-
-
-                var extractedChromeDriver = filesAfter.First(f => !filesBefore.Contains(f));
-
+                string chromeDriverPath = $"{DriversFolderPath()}/chromedriver-{driverKey}/{chromeDriverFileName}";
 
                 File.Delete(compressedFilePath);
-                File.Move(extractedChromeDriver, DriverPath());
+                File.Move(chromeDriverPath, DriverPath());
             }
 
 
