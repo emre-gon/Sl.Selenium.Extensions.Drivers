@@ -117,21 +117,21 @@ namespace Selenium.Extensions
 
                 string browserKey = GeckoDriverGithubKey();
 
+                var assetsSrc = htmlDoc.QuerySelector("include-fragment[src*='geckodriver/releases']").GetAttributeValue("src", null);
+
+                var spl = assetsSrc.Split('/');
+                var version = spl[spl.Length - 1];
+
+                string geckoDriverLink = $"https://github.com/mozilla/geckodriver/releases/download/{version}/geckodriver-{version}-{browserKey}.zip";
 
 
-                var anchor = htmlDoc.QuerySelector($"a[href*='/releases/download'][href*='{browserKey}']:not([href*='.asc'])");
-
-                string href = "https://github.com" + anchor.GetAttributeValue("href", null);
-
-                
-
-                string extension = href.EndsWith(".zip") ? ".zip" : ".tar.gz";
+                string extension = geckoDriverLink.EndsWith(".zip") ? ".zip" : ".tar.gz";
 
                 Directory.CreateDirectory(DriversFolderPath());
 
                 string compressedFilePath = DriverPath() + extension;
 
-                client.DownloadFile(href, compressedFilePath);
+                client.DownloadFile(geckoDriverLink, compressedFilePath);
 
 
                 var filesBefore = Directory.GetFiles(DriversFolderPath());
