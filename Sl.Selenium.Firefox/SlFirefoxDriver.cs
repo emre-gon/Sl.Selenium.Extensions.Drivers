@@ -298,7 +298,7 @@ namespace Selenium.Extensions
                 }
                 else if (Platform.CurrentOS == OperatingSystemType.Linux)
                 {
-                    return $"{uProfile}/.mozilla/firefox/";
+                    return $"{uProfile}/snap/firefox/common/.mozilla/firefox/";
                 }
                 else
                 {
