@@ -94,11 +94,11 @@ namespace Selenium.Extensions
             switch (Platform.CurrentOS)
             {
                 case OperatingSystemType.Windows:
-                    return Environment.Is64BitOperatingSystem ? "win64" : "win32";
+                    return Environment.Is64BitOperatingSystem ? "win64.zip" : "win32.zip";
                 case OperatingSystemType.OSX:
-                    return "macos";
+                    return "macos.tar.gz";
                 case OperatingSystemType.Linux:
-                    return Environment.Is64BitOperatingSystem ? "linux64" : "linux32";
+                    return Environment.Is64BitOperatingSystem ? "linux64.tar.gz" : "linux32.tar.gz";
                 default:
                     throw new Exception("Cannot download geckodriver. Unknown operating system.");
             }
@@ -122,7 +122,7 @@ namespace Selenium.Extensions
                 var spl = assetsSrc.Split('/');
                 var version = spl[spl.Length - 1];
 
-                string geckoDriverLink = $"https://github.com/mozilla/geckodriver/releases/download/{version}/geckodriver-{version}-{browserKey}.zip";
+                string geckoDriverLink = $"https://github.com/mozilla/geckodriver/releases/download/{version}/geckodriver-{version}-{browserKey}";
 
 
                 string extension = geckoDriverLink.EndsWith(".zip") ? ".zip" : ".tar.gz";
