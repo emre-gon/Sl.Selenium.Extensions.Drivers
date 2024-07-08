@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.3.3</Version>
+    <Version>2.3.4</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Authors>emre-gon</Authors>
     <Copyright>2022</Copyright>

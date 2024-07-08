@@ -56,7 +56,7 @@ namespace Selenium.Extensions
 
         public override string DriverName()
         {
-            string gd = "geckodriver" + GeckoDriverGithubKey();
+            string gd = "geckodriver" + GeckoDriverGithubKey().Replace(".zip", "").Replace(".tar.gz", "");
             if (Platform.CurrentOS == OperatingSystemType.Windows)
                 return gd + ".exe";
 
@@ -102,7 +102,6 @@ namespace Selenium.Extensions
                 default:
                     throw new Exception("Cannot download geckodriver. Unknown operating system.");
             }
-
         }
 
         protected override void DownloadLatestDriver()
@@ -142,7 +141,6 @@ namespace Selenium.Extensions
                 }
                 else
                 {
-
                     Stream inStream = System.IO.File.OpenRead(compressedFilePath);
                     Stream gzipStream = new GZipInputStream(inStream);
 
@@ -152,19 +150,12 @@ namespace Selenium.Extensions
                     tarArchive.Close();
                 }
 
-
-
                 var filesAfter = Directory.GetFiles(DriversFolderPath());
-
-
                 var extractedGeckoDriver = filesAfter.First(f => !filesBefore.Contains(f));
-
 
                 File.Delete(compressedFilePath);
                 File.Move(extractedGeckoDriver, DriverPath());
-
             }
-
         }
 
         protected override OpenQA.Selenium.Firefox.FirefoxDriver CreateBaseDriver()
