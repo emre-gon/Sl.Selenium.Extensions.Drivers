@@ -64,7 +64,7 @@ namespace Selenium.Extensions
         }
 
 
-        private readonly static string[] ProcessNames = { "geckodriver", "firefox", "geckodriverwin64" };
+        private readonly static string[] ProcessNames = { "geckodriver", "firefox", "geckodriverwin64.zip" };
         /// <summary>
         /// Use with caution. It will kill all running spiders
         /// </summary>
